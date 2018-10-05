@@ -18,15 +18,19 @@ import keyring
 import mintapi
 import pprint
 import os
+from dotenv import load_dotenv, find_dotenv
 from tabulate import tabulate
 from colorama import init
 init()
 from colorama import Fore, Style
 
 def main():
+    # load from .env file
+    load_dotenv(find_dotenv())
+
     # Load username and passwords
-    username = os.environ['mUSER']
-    password = os.environ['mPASS']
+    username = os.environ['MINT_USER']
+    password = os.environ['MINT_PASS']
     print(f'Logging as {username} with password: {password}')
     mint = mintapi.Mint(username, password)
 
@@ -70,14 +74,14 @@ def main():
     spend = budgets["spend"]
 
     # TODO: Add showing the mint total for the month
-    deductionRate = rm
-    hour_a_week = rm
-    pay_rate = rm
-    tax_rate = rm
+    deductionRate = float(os.environ['DEDUCTION_RATE'])
+    hour_a_week = float(os.environ['HOUR_A_WEEK'])
+    pay_rate = float(os.environ['PAY_RATE'])
+    tax_rate = float(os.environ['TAX_RATE'])
 
     estimate_gross_income = (hour_a_week * pay_rate * 5 * 4)
     estimate_deductions = estimate_gross_income * deductionRate
-    estimate_tax_costs = (estimate_gross_income - estimate_deductions) * rm
+    estimate_tax_costs = (estimate_gross_income - estimate_deductions) * tax_rate
 
     print(f'Estimated Gross Income: {estimate_gross_income}')
     print(f'Estimated 401k Deduction: {estimate_deductions}')
