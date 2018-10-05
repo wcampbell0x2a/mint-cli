@@ -1,6 +1,5 @@
+#!/usr/bin/python3
 ##
-#!/usr/bin/env python3
-#
 # Script for displaying Mint.com information via terminal.
 # See here for API usage: https://github.com/mrooney/mintapi
 #
