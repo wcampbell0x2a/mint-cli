@@ -24,17 +24,7 @@ from colorama import init
 init()
 from colorama import Fore, Style
 
-def main():
-    # load from .env file
-    load_dotenv(find_dotenv())
-
-    # Load username and passwords
-    username = os.environ['MINT_USER']
-    password = os.environ['MINT_PASS']
-    print(f'Logging as {username} with password: {password}')
-    mint = mintapi.Mint(username, password)
-
-
+def net_worth(mint):
     print(Style.BRIGHT + Fore.BLUE + "ACCOUNTS" + Style.NORMAL + Fore.RESET)
     negativeAccounts = ['loan', 'credit']
     prevInstitution = ''
@@ -71,6 +61,7 @@ def main():
 
     print(tabulate(accounts, numalign="right", floatfmt=".2f", tablefmt="plain"))
 
+def monthly_budget(mint):
     # get budgets
     budgets = mint.get_budgets()
     income = budgets["income"]
@@ -177,6 +168,33 @@ def show_timegraph(percent):
 
     monthPercentage = round(currentDay/maxDaysMonth, 1)
     return "<" + Fore.GREEN + print_string[:int(monthPercentage*10)] + Fore.RESET + print_string[int(monthPercentage*10):] + ">"
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbosity", action="store_true",
+            help="increase output verbosity")
+    parser.add_argument("-n", "--net", action="store_true",
+            help="show net worth and account amounts")
+    parser.add_argument("-b", "--budget", action="store_true",
+            help="show current budget")
+    parser.add_argument("-r", "--refresh", action="store_true",
+            help="refresh data from mint account")
+    args = parser.parse_args()
+
+    # load from .env file
+    load_dotenv(find_dotenv())
+
+    # Load username and passwords
+    username = os.environ['MINT_USER']
+    password = os.environ['MINT_PASS']
+    if args.verbosity:
+        print(f'Logging as {username} with password: {password}')
+    mint = mintapi.Mint(username, password)
+
+    if args.net:
+        net_worth(mint)
+    if args.budget:
+        monthly_budget(mint)
 
 if __name__ == "__main__":
     main()
