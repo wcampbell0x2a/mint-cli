@@ -3,8 +3,7 @@
 # Script for displaying Mint.com information via terminal.
 # See here for API usage: https://github.com/mrooney/mintapi
 #
-# Use environment variables mUSER and mPASS as your mint account username
-# and password.
+# See Example env file and create your own with identify as .env
 #
 # Author Wayne Campbell
 # Found original net worth use on github somewhere
@@ -137,7 +136,7 @@ def monthly_budget(mint):
     now = datetime.datetime.now().strftime("%a %d %b %H:%M")
     print('\nLast updated ' + now)
 
-
+# @TODO Add pep8
 def show_timegraph(percent):
     """
     Displays the percentage spend a month as a colored ASCII art.
