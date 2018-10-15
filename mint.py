@@ -101,7 +101,7 @@ def monthly_budget(mint):
             f"${format(i['bgt'], '.2f')}",
             f"{round(i['amt'], 2)}",
             f"{round(i['rbal'], 2)}",
-            f"{show_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
+            f"{create_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
             f"{round((i['bgt'] / total_expense) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{round((i['bgt'] / total_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{str(round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0').strip()}%"
@@ -137,7 +137,7 @@ def monthly_budget(mint):
     print('\nLast updated ' + now)
 
 # @TODO Add pep8
-def show_timegraph(percent):
+def create_timegraph(percent):
     """
     Displays the percentage spend a month as a colored ASCII art.
 
