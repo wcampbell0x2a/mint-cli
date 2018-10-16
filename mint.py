@@ -34,6 +34,8 @@ def main():
     print(f'Logging as {username} with password: {password}')
     mint = mintapi.Mint(username, password)
 
+
+    print(Style.BRIGHT + Fore.BLUE + "ACCOUNTS" + Style.NORMAL + Fore.RESET)
     negativeAccounts = ['loan', 'credit']
     prevInstitution = ''
     accounts = []
@@ -58,10 +60,11 @@ def main():
             dueby = currency + ' @ ' + jsonaccount['dueDate']
         else:
             if (balance < 100):
-                balance = Fore.YELLOW + str(balance) + Fore.RESET
+                balance_str = Fore.YELLOW + str(balance) + Fore.RESET
             else:
-                balance = Fore.GREEN + str(balance) + Fore.RESET
-        accounts.append([institution, accountName.title(), balance, currency, due, dueby])
+                balance_str = Fore.GREEN + str(balance) + Fore.RESET
+        percentage = balance/mint.get_net_worth()
+        accounts.append([institution, accountName.title(), balance_str, currency, due, dueby, f'{round(percentage*100, 0)}%'])
 
     accounts.append(['', '', None, '', None, ''])
     accounts.append(['', Style.BRIGHT + '               NET WORTH', mint.get_net_worth(), 'USD' + Style.NORMAL, None, ''])
