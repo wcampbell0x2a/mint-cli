@@ -23,15 +23,47 @@ from colorama import init
 init()
 from colorama import Fore, Style
 
-def net_worth(mint):
+def datetime_handler(x):
+    if isinstance(x, datetime.datetime):
+        return x.isoformat()
+    raise TypeError("Unknown type")
+
+def load_json(name):
+    try:
+        with open(f'data/{name}.json') as f:
+            data = json.load(f)
+        return data
+    except FileNotFoundError:
+        print("Use -r to refresh and save json files")
+
+def save_json(name, data):
+    with open(f'data/{name}.json', 'w') as outfile:
+        json.dump(data, outfile, default=datetime_handler)
+
+def refresh(verbose):
+    username = os.environ['MINT_USER']
+    password = os.environ['MINT_PASS']
+    if verbose:
+        print(f'Logging as {username} with password: {password}')
+    mint = mintapi.Mint(username, password)
+
+    save_json('accounts', mint.get_accounts())
+    save_json('net_worth', mint.get_net_worth())
+    save_json('budgets', mint.get_budgets())
+
+    print("mint data saved successfully")
+
+def net_worth():
     print(Style.BRIGHT + Fore.BLUE + "ACCOUNTS" + Style.NORMAL + Fore.RESET)
     negativeAccounts = ['loan', 'credit']
     prevInstitution = ''
     accounts = []
 
-    # TODO print percentage of each account to each other
-    # Get basic account information
-    jsonaccounts = mint.get_accounts()
+    # Load data
+    jsonaccounts = load_json('accounts')
+    net_worth = load_json('net_worth')
+
+
     for jsonaccount in jsonaccounts:
         institution = jsonaccount['fiName']
         if (institution == prevInstitution):
@@ -52,21 +84,21 @@ def net_worth(mint):
                 balance_str = Fore.YELLOW + str(balance) + Fore.RESET
             else:
                 balance_str = Fore.GREEN + str(balance) + Fore.RESET
-        percentage = balance/mint.get_net_worth()
+        percentage = balance/net_worth
         accounts.append([institution, accountName.title(), balance_str, currency, due, dueby, f'{round(percentage*100, 0)}%'])
 
     accounts.append(['', '', None, '', None, ''])
-    accounts.append(['', Style.BRIGHT + '               NET WORTH', mint.get_net_worth(), 'USD' + Style.NORMAL, None, ''])
+    accounts.append(['', Style.BRIGHT + '               NET WORTH', net_worth, 'USD' + Style.NORMAL, None, ''])
 
     print(tabulate(accounts, numalign="right", floatfmt=".2f", tablefmt="plain"))
 
-def monthly_budget(mint):
+def monthly_budget():
     # get budgets
-    budgets = mint.get_budgets()
+    budgets = load_json('budgets')
     income = budgets["income"]
     spend = budgets["spend"]
 
-    # TODO: Add showing the mint total for the month
+    # TODO: Add showing the mint total for a specific month(not just current)
     deductionRate = float(os.environ['DEDUCTION_RATE'])
     hour_a_week = float(os.environ['HOUR_A_WEEK'])
     pay_rate = float(os.environ['PAY_RATE'])
@@ -180,20 +212,17 @@ def main():
             help="refresh data from mint account")
     args = parser.parse_args()
 
-    # load from .env file
+    # load .env file
     load_dotenv(find_dotenv())
 
     # Load username and passwords
-    username = os.environ['MINT_USER']
-    password = os.environ['MINT_PASS']
-    if args.verbosity:
-        print(f'Logging as {username} with password: {password}')
-    mint = mintapi.Mint(username, password)
+    if args.refresh:
+        refresh(args.verbosity)
 
     if args.net:
-        net_worth(mint)
+        net_worth()
     if args.budget:
-        monthly_budget(mint)
+        monthly_budget()
 
 if __name__ == "__main__":
     main()
