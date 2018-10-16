@@ -11,9 +11,10 @@
 ##
 
 import argparse
+import calendar
+import datetime
 import datetime
 import json
-import keyring
 import mintapi
 import pprint
 import os
@@ -82,6 +83,7 @@ def main():
     estimate_deductions = estimate_gross_income * deductionRate
     estimate_tax_costs = (estimate_gross_income - estimate_deductions) * tax_rate
 
+    print("Estimated values from .env file")
     print(f'Estimated Gross Income: {estimate_gross_income}')
     print(f'Estimated 401k Deduction: {estimate_deductions}')
     print(f'Estimated Taxes: {estimate_tax_costs}')
@@ -106,39 +108,72 @@ def main():
             f"${format(i['bgt'], '.2f')}",
             f"{round(i['amt'], 2)}",
             f"{round(i['rbal'], 2)}",
+            f"{show_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
             f"{round((i['bgt'] / total_expense) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{round((i['bgt'] / total_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
-            f"{round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
+            f"{str(round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0').strip()}%"
         ])
         budget_list = sorted(budget_list, key=lambda x: float(x[1][1:]))
 
     budget_list.append(['Leftover', f"${format(leftover, '.2f')}", None, None,
-        None, f"{round((leftover / total_income) * 100, 2)}%",
+        None, None, f"{round((leftover / total_income) * 100, 2)}%",
         f"{round((leftover / estimate_gross_income) * 100, 2)}%"])
     budget_list.append([None, None, None, None, None])
 
     budget_list.append(['401k', f"${format(estimate_deductions, '.2f')}",
-        None, None, None, None,
+        None, None, None, None, None,
         f"{round((estimate_deductions / estimate_gross_income) *  100, 2)}%"
     ])
     budget_list.append(['Taxes', f"${format(estimate_tax_costs, '.2f')}",
-        None, None, None, None,
+        None, None, None, None, None,
         f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%"
     ])
 
-    print(tabulate(budget_list, numalign="right", floatfmt=".2f", tablefmt="grid",
+    print(tabulate(budget_list, numalign="left", floatfmt=".2f", tablefmt="grid",
         headers=["Name",
             "Total",
             "Current Amount",
             "Remaining Balance",
+            "",
             "Percent of Expense Budget ",
             "Percent of Budget(Take Home) Income",
             "Percent of Gross Income"
-
     ]))
 
     now = datetime.datetime.now().strftime("%a %d %b %H:%M")
     print('\nLast updated ' + now)
+
+
+def show_timegraph(percent):
+    """
+    Displays the percentage spend a month as a colored ASCII art.
+
+    Keywork Arguments:
+    percent - percentage of total spend on budget
+    return string of display
+    """
+    percentage = round(int(percent)/100, 1)
+
+    if percentage < 0:
+        percentage = 0
+
+    print_string = ""
+    for x in range(1, int(percentage*10), 1):
+        print_string += "-"
+    print_string += "|"
+    if print_string == "|":
+        start_r = 1
+    else:
+        start_r = 0
+    for x in range(int(percentage*10) + start_r, 10, 1):
+        print_string += "-"
+
+    currentDay = datetime.datetime.today().day
+    now = datetime.datetime.now()
+    maxDaysMonth = calendar.monthrange(now.year, now.month)[1]
+
+    monthPercentage = round(currentDay/maxDaysMonth, 1)
+    return "<" + Fore.GREEN + print_string[:int(monthPercentage*10)] + Fore.RESET + print_string[int(monthPercentage*10):] + ">"
 
 if __name__ == "__main__":
     main()
