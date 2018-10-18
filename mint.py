@@ -182,6 +182,12 @@ def create_timegraph(percent):
     if percentage < 0:
         percentage = 0
 
+    # @TODO if over 10%, display vertical bar as red
+    #if percentage >= 1.1:
+
+    if percentage > 1:
+        percentage = 1
+
     print_string = ""
     for x in range(1, int(percentage*10), 1):
         print_string += "-"
