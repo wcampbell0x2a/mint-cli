@@ -178,12 +178,14 @@ def create_timegraph(percent):
     return string of display
     """
     percentage = round(int(percent)/100, 1)
+    color_red = False
 
     if percentage < 0:
         percentage = 0
 
-    # @TODO if over 10%, display vertical bar as red
-    #if percentage >= 1.1:
+    # if over 10%, display vertical bar as red
+    if percentage >= 1.1:
+        color_red = True
 
     if percentage > 1:
         percentage = 1
@@ -204,7 +206,15 @@ def create_timegraph(percent):
     maxDaysMonth = calendar.monthrange(now.year, now.month)[1]
 
     monthPercentage = round(currentDay/maxDaysMonth, 1)
-    return "<" + Fore.GREEN + print_string[:int(monthPercentage*10)] + Fore.RESET + print_string[int(monthPercentage*10):] + ">"
+    r_string = "<"
+    r_string += Fore.GREEN + print_string[:int(monthPercentage*10)] + Fore.RESET
+    r_string += print_string[int(monthPercentage*10):-1]
+    if color_red:
+        r_string += Fore.RED + print_string[-1:]
+    else:
+        r_string += print_string[-1:]
+    r_string += Fore.RESET + ">"
+    return r_string
 
 def main():
     parser = argparse.ArgumentParser()
