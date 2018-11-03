@@ -26,12 +26,22 @@ init()
 
 
 def datetime_handler(x):
+    """
+    Helper function to load datetime json formats into python datetime.
+    mintapi json files if saved need this functionality to work without
+    throwing errors.
+    """
     if isinstance(x, datetime.datetime):
         return x.isoformat()
     raise TypeError("Unknown type")
 
 
 def load_json(name):
+    """
+    Load json file in data directory
+    Args:
+        name(string): name of file to be loaded
+    """
     try:
         with open(f'data/{name}.json') as f:
             data = json.load(f)
@@ -41,11 +51,22 @@ def load_json(name):
 
 
 def save_json(name, data):
+    """
+    Helper function to save python json data as files.
+    Args:
+        name(string): name of file
+        data(json): data of file created
+    """
     with open(f'data/{name}.json', 'w') as outfile:
         json.dump(data, outfile, default=datetime_handler)
 
 
 def refresh(verbose):
+    """
+    Create json data files from the data provided by mintapi.
+    Args:
+        verbose(bool): If true, will print current username and password.
+    """
     username = os.environ['MINT_USER']
     password = os.environ['MINT_PASS']
     if verbose:
@@ -60,6 +81,10 @@ def refresh(verbose):
 
 
 def net_worth():
+    """
+    Display all accounts with the total amount in each account.
+    Show the total amount at the end
+    """
     print(Style.BRIGHT + Fore.BLUE + "ACCOUNTS" + Style.NORMAL + Fore.RESET)
     negativeAccounts = ['loan', 'credit']
     prevInstitution = ''
@@ -69,6 +94,7 @@ def net_worth():
     jsonaccounts = load_json('accounts')
     net_worth = load_json('net_worth')
 
+    # Loop through accounts and display with due date
     for jsonaccount in jsonaccounts:
         institution = jsonaccount['fiName']
         if (institution == prevInstitution):
@@ -102,12 +128,20 @@ def net_worth():
 
 
 def monthly_budget():
+    """
+    Display monthly budget in table format
+
+    Table has attributes that are found from the transaction table. Will print
+    timegraph of the current balence of a budget. These values are created from
+    the .env file.
+    """
+    # TODO: Add showing the mint total for a specific month(not just current)
+
     # get budgets
     budgets = load_json('budgets')
     income = budgets["income"]
     spend = budgets["spend"]
 
-    # TODO: Add showing the mint total for a specific month(not just current)
     deductionRate = float(os.environ['DEDUCTION_RATE'])
     hour_a_week = float(os.environ['HOUR_A_WEEK'])
     pay_rate = float(os.environ['PAY_RATE'])
@@ -137,6 +171,7 @@ def monthly_budget():
     leftover = total_income - total_expense
     print(f"Leftover: ${format(leftover, '.2f')}")
 
+    # Create budget list, then sort the list by total current amount
     budget = []
     for i in spend:
         budget.append([
@@ -161,6 +196,7 @@ def monthly_budget():
                   None, None, None, None, None,
                   f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%"])
 
+    # Print list as tabulate table
     print(tabulate(budget, numalign="left", floatfmt=".2f",
           tablefmt="grid",
           headers=["Name",
@@ -181,9 +217,10 @@ def create_timegraph(percent):
     """
     Displays the percentage spend a month as a colored ASCII art.
 
-    Keywork Arguments:
-    percent - percentage of total spend on budget
-    return string of display
+    Args:
+        percent(float): percentage of total spend on budget
+    Returns:
+        string of display
     """
     percentage = round(int(percent)/100, 1)
     color_red = False
