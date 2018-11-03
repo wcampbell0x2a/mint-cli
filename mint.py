@@ -20,13 +20,16 @@ import os
 from dotenv import load_dotenv, find_dotenv
 from tabulate import tabulate
 from colorama import init
-init()
 from colorama import Fore, Style
+
+init()
+
 
 def datetime_handler(x):
     if isinstance(x, datetime.datetime):
         return x.isoformat()
     raise TypeError("Unknown type")
+
 
 def load_json(name):
     try:
@@ -36,9 +39,11 @@ def load_json(name):
     except FileNotFoundError:
         print("Use -r to refresh and save json files")
 
+
 def save_json(name, data):
     with open(f'data/{name}.json', 'w') as outfile:
         json.dump(data, outfile, default=datetime_handler)
+
 
 def refresh(verbose):
     username = os.environ['MINT_USER']
@@ -53,6 +58,7 @@ def refresh(verbose):
 
     print("mint data saved successfully")
 
+
 def net_worth():
     print(Style.BRIGHT + Fore.BLUE + "ACCOUNTS" + Style.NORMAL + Fore.RESET)
     negativeAccounts = ['loan', 'credit']
@@ -62,7 +68,6 @@ def net_worth():
     # Load data
     jsonaccounts = load_json('accounts')
     net_worth = load_json('net_worth')
-
 
     for jsonaccount in jsonaccounts:
         institution = jsonaccount['fiName']
@@ -85,12 +90,16 @@ def net_worth():
             else:
                 balance_str = Fore.GREEN + str(balance) + Fore.RESET
         percentage = balance/net_worth
-        accounts.append([institution, accountName.title(), balance_str, currency, due, dueby, f'{round(percentage*100, 0)}%'])
+        accounts.append([institution, accountName.title(), balance_str,
+                        currency, due, dueby, f'{round(percentage*100, 0)}%'])
 
     accounts.append(['', '', None, '', None, ''])
-    accounts.append(['', Style.BRIGHT + '               NET WORTH', net_worth, 'USD' + Style.NORMAL, None, ''])
+    accounts.append(['', Style.BRIGHT + '               NET WORTH',
+                    net_worth, 'USD' + Style.NORMAL, None, ''])
 
-    print(tabulate(accounts, numalign="right", floatfmt=".2f", tablefmt="plain"))
+    print(tabulate(accounts, numalign="right", floatfmt=".2f",
+          tablefmt="plain"))
+
 
 def monthly_budget():
     # get budgets
@@ -106,7 +115,8 @@ def monthly_budget():
 
     estimate_gross_income = (hour_a_week * pay_rate * 5 * 4)
     estimate_deductions = estimate_gross_income * deductionRate
-    estimate_tax_costs = (estimate_gross_income - estimate_deductions) * tax_rate
+    estimate_tax_costs = (estimate_gross_income - estimate_deductions)
+    estimate_tax_costs *= tax_rate
 
     print("Estimated values from .env file")
     print(f'Estimated Gross Income: {estimate_gross_income}')
@@ -115,7 +125,8 @@ def monthly_budget():
 
     # find total income
     total_income = income[0]["bgt"]
-    print(f"Total Budgeted(Net) Income(after taxes, 401k): ${format(total_income, '.2f')}")
+    print(f"Total Budgeted(Net) Income(after taxes, 401k):"
+          f"${format(total_income, '.2f')}")
 
     # find total expense
     total_expense = 0
@@ -126,9 +137,9 @@ def monthly_budget():
     leftover = total_income - total_expense
     print(f"Leftover: ${format(leftover, '.2f')}")
 
-    budget_list = []
+    budget = []
     for i in spend:
-        budget_list.append([
+        budget.append([
             f"{i['cat']}",
             f"${format(i['bgt'], '.2f')}",
             f"{round(i['amt'], 2)}",
@@ -136,37 +147,34 @@ def monthly_budget():
             f"{create_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
             f"{round((i['bgt'] / total_expense) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{round((i['bgt'] / total_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
-            f"{str(round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0').strip()}%"
-        ])
-        budget_list = sorted(budget_list, key=lambda x: float(x[1][1:]))
+            f"{str(round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0').strip()}%"])
+        budget = sorted(budget, key=lambda x: float(x[1][1:]))
 
-    budget_list.append(['Leftover', f"${format(leftover, '.2f')}", None, None,
-        None, None, f"{round((leftover / total_income) * 100, 2)}%",
-        f"{round((leftover / estimate_gross_income) * 100, 2)}%"])
-    budget_list.append([None, None, None, None, None])
+    budget.append(['Leftover', f"${format(leftover, '.2f')}", None, None,
+                  None, None, f"{round((leftover / total_income) * 100, 2)}%",
+                  f"{round((leftover / estimate_gross_income) * 100, 2)}%"])
+    budget.append([None, None, None, None, None])
+    budget.append(['401k', f"${format(estimate_deductions, '.2f')}",
+                  None, None, None, None, None,
+                  f"{round((estimate_deductions / estimate_gross_income) *  100, 2)}%"])
+    budget.append(['Taxes', f"${format(estimate_tax_costs, '.2f')}",
+                  None, None, None, None, None,
+                  f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%"])
 
-    budget_list.append(['401k', f"${format(estimate_deductions, '.2f')}",
-        None, None, None, None, None,
-        f"{round((estimate_deductions / estimate_gross_income) *  100, 2)}%"
-    ])
-    budget_list.append(['Taxes', f"${format(estimate_tax_costs, '.2f')}",
-        None, None, None, None, None,
-        f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%"
-    ])
-
-    print(tabulate(budget_list, numalign="left", floatfmt=".2f", tablefmt="grid",
-        headers=["Name",
-            "Total",
-            "Current Amount",
-            "Remaining Balance",
-            "",
-            "Percent of Expense Budget ",
-            "Percent of Budget(Take Home) Income",
-            "Percent of Gross Income"
-    ]))
+    print(tabulate(budget, numalign="left", floatfmt=".2f",
+          tablefmt="grid",
+          headers=["Name",
+                   "Total",
+                   "Current Amount",
+                   "Remaining Balance",
+                   "",
+                   "Percent of Expense Budget ",
+                   "Percent of Budget(Take Home) Income",
+                   "Percent of Gross Income"]))
 
     now = datetime.datetime.now().strftime("%a %d %b %H:%M")
     print('\nLast updated ' + now)
+
 
 # @TODO Add pep8
 def create_timegraph(percent):
@@ -207,7 +215,8 @@ def create_timegraph(percent):
 
     monthPercentage = round(currentDay/maxDaysMonth, 1)
     r_string = "<"
-    r_string += Fore.GREEN + print_string[:int(monthPercentage*10)] + Fore.RESET
+    r_string += Fore.GREEN + print_string[:int(monthPercentage*10)]
+    r_string += Fore.RESET
     r_string += print_string[int(monthPercentage*10):-1]
     if color_red:
         r_string += Fore.RED + print_string[-1:]
@@ -216,16 +225,18 @@ def create_timegraph(percent):
     r_string += Fore.RESET + ">"
     return r_string
 
+
 def main():
+    # Load arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbosity", action="store_true",
-            help="increase output verbosity")
+                        help="increase output verbosity")
     parser.add_argument("-n", "--net", action="store_true",
-            help="show net worth and account amounts")
+                        help="show net worth and account amounts")
     parser.add_argument("-b", "--budget", action="store_true",
-            help="show current budget")
+                        help="show current budget")
     parser.add_argument("-r", "--refresh", action="store_true",
-            help="refresh data from mint account")
+                        help="refresh data from mint account")
     args = parser.parse_args()
 
     # load .env file
@@ -234,11 +245,13 @@ def main():
     # Load username and passwords
     if args.refresh:
         refresh(args.verbosity)
-
+    # Load net worth
     if args.net:
         net_worth()
+    # Load budget display
     if args.budget:
         monthly_budget()
+
 
 if __name__ == "__main__":
     main()
