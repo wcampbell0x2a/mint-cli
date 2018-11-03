@@ -19,8 +19,7 @@ import pprint
 import os
 from dotenv import load_dotenv, find_dotenv
 from tabulate import tabulate
-from colorama import init
-from colorama import Fore, Style
+from colorama import init, Fore, Style
 
 init()
 
@@ -136,6 +135,7 @@ def monthly_budget():
     the .env file.
     """
     # TODO: Add showing the mint total for a specific month(not just current)
+    # TODO: Display time refreshed instead of current time.
 
     # get budgets
     budgets = load_json('budgets')
