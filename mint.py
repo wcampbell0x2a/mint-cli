@@ -152,14 +152,13 @@ def monthly_budget():
     estimate_tax_costs = (estimate_gross_income - estimate_deductions)
     estimate_tax_costs *= tax_rate
 
-    print("Estimated values from .env file")
-    print(f'Estimated Gross Income: {estimate_gross_income}')
-    print(f'Estimated 401k Deduction: {estimate_deductions}')
-    print(f'Estimated Taxes: {estimate_tax_costs}')
+    print(f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}")
+    print(f"Estimated 401k Deduction: ${format(estimate_deductions, '.2f')}")
+    print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}")
 
     # find total income
     total_income = income[0]["bgt"]
-    print(f"Total Budgeted(Net) Income(after taxes, 401k):"
+    print(f"Total Budgeted(Net) Income(after taxes, 401k): "
           f"${format(total_income, '.2f')}")
 
     # find total expense
