@@ -131,7 +131,7 @@ def monthly_budget():
     Display monthly budget in table format
 
     Table has attributes that are found from the transaction table. Will print
-    timegraph of the current balence of a budget. These values are created from
+    timegraph of the current balance of a budget. These values are created from
     the .env file.
     """
     # TODO: Add showing the mint total for a specific month(not just current)
@@ -158,7 +158,7 @@ def monthly_budget():
 
     # find total income
     total_income = income[0]["bgt"]
-    print(f"Total Budgeted(Net) Income(after taxes, 401k): "
+    print(f"Total Net Income: "
           f"${format(total_income, '.2f')}")
 
     # find total expense
@@ -181,7 +181,8 @@ def monthly_budget():
             f"{create_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
             f"{round((i['bgt'] / total_expense) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{round((i['bgt'] / total_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
-            f"{str(round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0').strip()}%"])
+            f"{str(round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0').strip()}%",
+            f"{str(round((i['amt'] / estimate_gross_income) * 100, 2) if i['amt'] >= 0 else '0').strip()}%"])
         budget = sorted(budget, key=lambda x: float(x[1][1:]))
 
     budget.append(['Leftover', f"${format(leftover, '.2f')}", None, None,
@@ -203,9 +204,10 @@ def monthly_budget():
                    "Current Amount",
                    "Remaining Balance",
                    "",
-                   "Percent of Expense Budget ",
-                   "Percent of Budget(Take Home) Income",
-                   "Percent of Gross Income"]))
+                   "(Budget) Percent of Expenses",
+                   "(Budget) Percent of Net Income",
+                   "(Budget) Percent of Gross Income",
+                   "(Real) Percent of Gross Income"]))
 
     now = datetime.datetime.now().strftime("%a %d %b %H:%M")
     print('\nLast updated ' + now)
