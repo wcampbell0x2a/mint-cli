@@ -143,11 +143,11 @@ def monthly_budget():
     spend = budgets["spend"]
 
     deductionRate = float(os.environ['DEDUCTION_RATE'])
-    hour_a_week = float(os.environ['HOUR_A_WEEK'])
+    hour_a_day = float(os.environ['HOUR_A_DAY'])
     pay_rate = float(os.environ['PAY_RATE'])
     tax_rate = float(os.environ['TAX_RATE'])
 
-    estimate_gross_income = (hour_a_week * pay_rate * 5 * 4)
+    estimate_gross_income = (hour_a_day * pay_rate * 21.74)
     estimate_deductions = estimate_gross_income * deductionRate
     estimate_tax_costs = (estimate_gross_income - estimate_deductions)
     estimate_tax_costs *= tax_rate
@@ -167,7 +167,7 @@ def monthly_budget():
         total_expense += i['bgt']
     print(f"Total Budgeted Expense: ${format(total_expense, '.2f')}")
 
-    leftover = total_income - total_expense
+    leftover = net_income - total_expense
     print(f"Leftover: ${format(leftover, '.2f')}")
 
     # Create budget list, then sort the list by total current amount
@@ -180,13 +180,13 @@ def monthly_budget():
             f"{round(i['rbal'], 2)}",
             f"{create_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
             f"{round((i['bgt'] / total_expense) * 100, 2) if i['bgt'] >= 0 else '0'}%",
-            f"{round((i['bgt'] / total_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
+            f"{round((i['bgt'] / net_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{str(round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0').strip()}%",
             f"{str(round((i['amt'] / estimate_gross_income) * 100, 2) if i['amt'] >= 0 else '0').strip()}%"])
         budget = sorted(budget, key=lambda x: float(x[1][1:]))
 
     budget.append(['Leftover', f"${format(leftover, '.2f')}", None, None,
-                  None, None, f"{round((leftover / total_income) * 100, 2)}%",
+                  None, None, f"{round((leftover / net_income) * 100, 2)}%",
                   f"{round((leftover / estimate_gross_income) * 100, 2)}%"])
     budget.append([None, None, None, None, None])
     budget.append(['401k', f"${format(estimate_deductions, '.2f')}",
