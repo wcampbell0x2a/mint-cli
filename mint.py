@@ -156,16 +156,23 @@ def monthly_budget():
     print(f"Estimated 401k Deduction: ${format(estimate_deductions, '.2f')}")
     print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}")
 
-    # find total income
-    total_income = income[0]["bgt"]
-    print(f"Total Net Income: "
-          f"${format(total_income, '.2f')}")
+    # find net income from mint budget
+    net_income = income[0]["bgt"]
+    print(f"(Mint) Total Net Income: "
+          f"${format(net_income, '.2f')}")
 
-    # find total expense
+    # Find net income from env variables
+    net_income = (pay_rate * 21.74 * hour_a_day)
+    net_income -= (net_income * deductionRate)
+    net_income -= (net_income * tax_rate)
+    print(f"(Env) Total Net Income: "
+          f"${format(net_income, '.2f')}")
+
+    # find total expense from mint budget
     total_expense = 0
     for i in spend:
         total_expense += i['bgt']
-    print(f"Total Budgeted Expense: ${format(total_expense, '.2f')}")
+    print(f"(Mint) Total Expense: ${format(total_expense, '.2f')}")
 
     leftover = net_income - total_expense
     print(f"Leftover: ${format(leftover, '.2f')}")
