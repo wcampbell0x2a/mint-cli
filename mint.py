@@ -17,6 +17,7 @@ import json
 import mintapi
 import pprint
 import os
+import time
 from dotenv import load_dotenv, find_dotenv
 from tabulate import tabulate
 from colorama import init, Fore, Style
@@ -135,7 +136,6 @@ def monthly_budget():
     the .env file.
     """
     # TODO: Add showing the mint total for a specific month(not just current)
-    # TODO: Display time refreshed instead of current time.
 
     # get budgets
     budgets = load_json('budgets')
@@ -216,8 +216,8 @@ def monthly_budget():
                    "(Budget) Percent of Gross Income",
                    "(Real) Percent of Gross Income"]))
 
-    now = datetime.datetime.now().strftime("%a %d %b %H:%M")
-    print('\nLast updated ' + now)
+    timeModified = time.ctime(os.path.getmtime("data/budgets.json"))
+    print('\nData Last updated ' + timeModified)
 
 
 # @TODO Add pep8
