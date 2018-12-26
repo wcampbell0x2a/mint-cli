@@ -142,10 +142,20 @@ def monthly_budget():
     income = budgets["income"]
     spend = budgets["spend"]
 
-    deductionRate = float(os.environ['DEDUCTION_RATE'])
-    hour_a_day = float(os.environ['HOUR_A_DAY'])
-    pay_rate = float(os.environ['PAY_RATE'])
-    tax_rate = float(os.environ['TAX_RATE'])
+    # Load .env and check for values.
+    deductionRate = float(os.environ['DEDUCTION_RATE']) if os.environ['DEDUCTION_RATE'] != "" else 0.0
+    if float(os.environ['HOUR_A_DAY']) != "":
+        hour_a_day = float(os.environ['HOUR_A_DAY'])
+    else:
+        print("Please enter .env data, missing HOUR_A_DAY")
+    if float(os.environ['PAY_RATE']) != "":
+        pay_rate = float(os.environ['PAY_RATE'])
+    else:
+        print("Please enter .env data, missing PAY_RATE")
+    if float(os.environ['TAX_RATE']) != "":
+        tax_rate = float(os.environ['TAX_RATE'])
+    else:
+        print("Please enter .env data, missing TAX_RATE")
 
     estimate_gross_income = (hour_a_day * pay_rate * 21.74)
     estimate_deductions = estimate_gross_income * deductionRate
