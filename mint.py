@@ -281,18 +281,32 @@ def create_timegraph(percent):
     now = datetime.datetime.now()
     maxDaysMonth = calendar.monthrange(now.year, now.month)[1]
 
-    monthPercentage = round(currentDay/maxDaysMonth, 1)
+    # Print Timeline
+    monthPercentage = int(round(currentDay/maxDaysMonth, 1)*10)
     r_string = "<"
-    r_string += Fore.GREEN + print_string[:int(monthPercentage*10)]
+    r_string += Fore.GREEN + print_string[:monthPercentage]
     r_string += Fore.RESET
-    r_string += print_string[int(monthPercentage*10):-1]
+
+    # Fill in rest of month
+    r_string += print_string[monthPercentage:-1]
+
+    # Print last red of over 10%
     if color_red:
         r_string += Fore.RED + print_string[-1:]
     else:
-        r_string += print_string[-1:]
+        # Check if end of month, if end of month print green
+        # instead of reset color
+        if (monthPercentage == 10):
+            r_string += Fore.GREEN + print_string[-1:]
+        else:
+            r_string += print_string[-1:]
+
+    # Correction for end of month (need to delete the last char if at the end)
+    if (monthPercentage == 10):
+        r_string = r_string[:15]  + r_string[16:]
+
     r_string += Fore.RESET + ">"
     return r_string
-
 
 def main():
     # Load arguments
