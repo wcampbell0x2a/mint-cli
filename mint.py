@@ -127,7 +127,7 @@ def net_worth():
           tablefmt="plain"))
 
 
-def monthly_budget():
+def monthly_budget(verbosity):
     """
     Display monthly budget in table format
 
@@ -161,40 +161,44 @@ def monthly_budget():
     estimate_deductions = estimate_gross_income * deductionRate
     estimate_tax_costs = (estimate_gross_income - estimate_deductions)
     estimate_tax_costs *= tax_rate
-
-    print(f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}")
-    print(f"Estimated 401k Deduction: ${format(estimate_deductions, '.2f')}")
-    print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}")
+    if verbosity:
+        print(f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}")
+        print(f"Estimated 401k Deduction: ${format(estimate_deductions, '.2f')}")
+        print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}")
 
     # find net income from mint budget
     net_income = income[0]["bgt"]
-    print(f"(Mint) Total Net Income: "
-          f"${format(net_income, '.2f')}")
+    if verbosity:
+        print(f"(Mint) Total Net Income: ${format(net_income, '.2f')}")
 
     # Find net income from env variables
     net_income = (pay_rate * 21.74 * hour_a_day)
     net_income -= (net_income * deductionRate)
     net_income -= (net_income * tax_rate)
-    print(f"(Env) Total Net Income: "
-          f"${format(net_income, '.2f')}")
+    if verbosity:
+        print(f"(Env) Total Net Income: ${format(net_income, '.2f')}")
 
     # find total expense from mint budget
     total_expense = 0
     for i in spend:
         total_expense += i['bgt']
-    print(f"(Mint) Total Expense: ${format(total_expense, '.2f')}")
+    if verbosity:
+        print(f"(Mint) Total Expense: ${format(total_expense, '.2f')}")
 
     # find total expense of real mint budget amount
     real_total_expense = 0
     for i in spend:
         real_total_expense += i['amt']
-    print(f"(Mint) Real Total Expense: ${format(real_total_expense, '.2f')}")
+    if verbosity:
+        print(f"(Mint) Real Total Expense: ${format(real_total_expense, '.2f')}")
 
     leftover = net_income - total_expense
-    print(f"Budget Leftover: ${format(leftover, '.2f')}")
+    if verbosity:
+        print(f"Budget Leftover: ${format(leftover, '.2f')}")
 
     real_leftover = net_income - real_total_expense
-    print(f"Real Budget Leftover: ${format(real_leftover, '.2f')}")
+    if verbosity:
+        print(f"Real Budget Leftover: ${format(real_leftover, '.2f')}")
 
     # Create budget list, then sort the list by total current amount
     budget = []
@@ -332,7 +336,7 @@ def main():
         net_worth()
     # Load budget display
     if args.budget:
-        monthly_budget()
+        monthly_budget(args.verbosity)
 
 
 if __name__ == "__main__":
