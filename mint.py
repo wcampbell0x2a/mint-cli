@@ -184,8 +184,17 @@ def monthly_budget():
         total_expense += i['bgt']
     print(f"(Mint) Total Expense: ${format(total_expense, '.2f')}")
 
+    # find total expense of real mint budget amount
+    real_total_expense = 0
+    for i in spend:
+        real_total_expense += i['amt']
+    print(f"(Mint) Real Total Expense: ${format(real_total_expense, '.2f')}")
+
     leftover = net_income - total_expense
-    print(f"Leftover: ${format(leftover, '.2f')}")
+    print(f"Budget Leftover: ${format(leftover, '.2f')}")
+
+    real_leftover = net_income - real_total_expense
+    print(f"Real Budget Leftover: ${format(real_leftover, '.2f')}")
 
     # Create budget list, then sort the list by total current amount
     budget = []
@@ -198,33 +207,37 @@ def monthly_budget():
             f"{create_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
             f"{round((i['bgt'] / total_expense) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{round((i['bgt'] / net_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
+            f"{round((i['amt'] / net_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{str(round((i['bgt'] / estimate_gross_income) * 100, 2) if i['bgt'] >= 0 else '0').strip()}%",
             f"{str(round((i['amt'] / estimate_gross_income) * 100, 2) if i['amt'] >= 0 else '0').strip()}%"])
         budget = sorted(budget, key=lambda x: float(x[1][1:]))
 
-    budget.append(['Leftover', f"${format(leftover, '.2f')}", None, None,
+    budget.append(['Leftover', f"${format(leftover, '.2f')}", f"${format(real_leftover, '.2f')}", None,
                   None, None, f"{round((leftover / net_income) * 100, 2)}%",
-                  f"{round((leftover / estimate_gross_income) * 100, 2)}%"])
+                  f"{round((real_leftover / net_income) * 100, 2)}%",
+                  f"{round((leftover / estimate_gross_income) * 100, 2)}%",
+                  f"{round((real_leftover / estimate_gross_income) * 100, 2)}%"])
     budget.append([None, None, None, None, None])
     budget.append(['401k', f"${format(estimate_deductions, '.2f')}",
-                  None, None, None, None, None,
+                  None, None, None, None, None, None,
                   f"{round((estimate_deductions / estimate_gross_income) *  100, 2)}%"])
     budget.append(['Taxes', f"${format(estimate_tax_costs, '.2f')}",
-                  None, None, None, None, None,
+                  None, None, None, None, None, None,
                   f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%"])
 
     # Print list as tabulate table
     print(tabulate(budget, numalign="left", floatfmt=".2f",
           tablefmt="grid",
           headers=["Name",
-                   "Total",
+                   "(Budget) Total",
                    "Current Amount",
                    "Remaining Balance",
                    "",
                    "(Budget) Percent of Expenses",
                    "(Budget) Percent of Net Income",
+                   "(Real Budget) Percent of Net Income",
                    "(Budget) Percent of Gross Income",
-                   "(Real) Percent of Gross Income"]))
+                   "(Real Budget) Percent of Gross Income"]))
 
     timeModified = time.ctime(os.path.getmtime("data/budgets.json"))
     print('\nData Last updated ' + timeModified)
