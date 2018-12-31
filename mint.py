@@ -230,9 +230,11 @@ def monthly_budget(verbosity):
     budget.append([None, None, None, None, None])
     budget.append(['401k', f"${format(estimate_deductions, '.2f')}",
                   None, None, None, None, None, None,
+                  f"{round((estimate_deductions / estimate_gross_income) *  100, 2)}%",
                   f"{round((estimate_deductions / estimate_gross_income) *  100, 2)}%"])
     budget.append(['Taxes', f"${format(estimate_tax_costs, '.2f')}",
                   None, None, None, None, None, None,
+                  f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%",
                   f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%"])
 
     # Print list as tabulate table
