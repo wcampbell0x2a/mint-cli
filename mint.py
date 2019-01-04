@@ -85,7 +85,7 @@ def net_worth():
     Display all accounts with the total amount in each account.
     Show the total amount at the end
     """
-    print(Style.BRIGHT + Fore.BLUE + "ACCOUNTS" + Style.NORMAL + Fore.RESET)
+    print(Style.BRIGHT + Fore.BLUE + "Net Worth" + Style.NORMAL + Fore.RESET)
     negativeAccounts = ['loan', 'credit']
     prevInstitution = ''
     accounts = []
@@ -129,13 +129,16 @@ def net_worth():
 
 def monthly_budget(verbosity):
     """
-    Display monthly budget in table format
+    1) Display monthly budget in table format
+    2) Display monthly savings rate
 
     Table has attributes that are found from the transaction table. Will print
     timegraph of the current balance of a budget. These values are created from
     the .env file.
     """
     # TODO: Add showing the mint total for a specific month(not just current)
+
+    print(Style.BRIGHT + Fore.BLUE + "Monthly Budget" + Style.NORMAL + Fore.RESET)
 
     # get budgets
     budgets = load_json('budgets')
@@ -395,6 +398,8 @@ def main():
     # Load budget display
     if args.budget:
         monthly_budget(args.verbosity)
+    if args.emergency:
+        emergency()
 
 
 if __name__ == "__main__":
