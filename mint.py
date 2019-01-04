@@ -158,12 +158,12 @@ def monthly_budget(verbosity):
         print("Please enter .env data, missing TAX_RATE")
 
     estimate_gross_income = (hour_a_day * pay_rate * 21.74)
-    estimate_deductions = estimate_gross_income * deductionRate
-    estimate_tax_costs = (estimate_gross_income - estimate_deductions)
+    estimate_deductions_401k = estimate_gross_income * deductionRate
+    estimate_tax_costs = (estimate_gross_income - estimate_deductions_401k)
     estimate_tax_costs *= tax_rate
     if verbosity:
         print(f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}")
-        print(f"Estimated 401k Deduction: ${format(estimate_deductions, '.2f')}")
+        print(f"Estimated 401k Deduction: ${format(estimate_deductions_401k, '.2f')}")
         print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}")
 
     # find net income from mint budget
@@ -228,10 +228,10 @@ def monthly_budget(verbosity):
                   f"{round((leftover / estimate_gross_income) * 100, 2)}%",
                   f"{round((real_leftover / estimate_gross_income) * 100, 2)}%"])
     budget.append([None, None, None, None, None])
-    budget.append(['401k', f"${format(estimate_deductions, '.2f')}",
+    budget.append(['401k', f"${format(estimate_deductions_401k, '.2f')}",
                   None, None, None, None, None, None,
-                  f"{round((estimate_deductions / estimate_gross_income) *  100, 2)}%",
-                  f"{round((estimate_deductions / estimate_gross_income) *  100, 2)}%"])
+                  f"{round((estimate_deductions_401k / estimate_gross_income) *  100, 2)}%",
+                  f"{round((estimate_deductions_401k / estimate_gross_income) *  100, 2)}%"])
     budget.append(['Taxes', f"${format(estimate_tax_costs, '.2f')}",
                   None, None, None, None, None, None,
                   f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%",
