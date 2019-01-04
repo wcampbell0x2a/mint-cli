@@ -253,7 +253,42 @@ def monthly_budget(verbosity):
 
     timeModified = time.ctime(os.path.getmtime("data/budgets.json"))
     print('\nData Last updated ' + timeModified)
+def emergency():
+    print(Style.BRIGHT + Fore.BLUE + "Emergency Calculator" + Style.NORMAL + Fore.RESET)
+    # Load data
+    jsonaccounts = load_json('accounts')
 
+    # Search accounts for accounts that are tagged as emergency accounts in .env
+    balance = 0
+    for jsonaccount in jsonaccounts:
+        # Check if .env variables exist
+        if str(os.environ['EMERGENCY']) != "":
+            emergency_var_string = str(os.environ['EMERGENCY'])
+        else:
+            print("Please enter .env data, missing EMERGENCY")
+
+        emergency_var_list = emergency_var_string.split(",")
+
+        # Insert into searchable list
+        for item in emergency_var_list:
+            institutionName = item[item.find("(")+1:item.find(")")]
+            accountName = item.split("(")[0]
+
+            if (jsonaccount['accountName'] ==  institutionName  and jsonaccount['fiName'] == accountName):
+                institution = jsonaccount['fiName']
+                accountName = jsonaccount['accountName']
+                balance += jsonaccount['currentBalance']
+
+
+    # find total expense from mint budget
+    budgets = load_json('budgets')
+    spend = budgets["spend"]
+    total_expense = 0
+    for i in spend:
+        total_expense += i['bgt']
+    print(f"Total Amount in Emergency Fund marked Accounts: ${balance}")
+    print(f"(Mint) Total Expense: ${format(total_expense, '.2f')}")
+    print(f"Current Months in Emergency Fund: {round(float(format(balance/total_expense)), 2)}")
 
 # @TODO Add pep8
 def create_timegraph(percent):
@@ -329,6 +364,8 @@ def main():
                         help="show net worth and account amounts")
     parser.add_argument("-b", "--budget", action="store_true",
                         help="show current budget")
+    parser.add_argument("-e", "--emergency", action="store_true",
+                        help="show emergency fund timeline")
     parser.add_argument("-r", "--refresh", action="store_true",
                         help="refresh data from mint account")
     args = parser.parse_args()
