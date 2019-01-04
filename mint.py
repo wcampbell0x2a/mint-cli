@@ -252,7 +252,20 @@ def monthly_budget(verbosity):
                    "(Real Budget) Percent of Gross Income"]))
 
     timeModified = time.ctime(os.path.getmtime("data/budgets.json"))
-    print('\nData Last updated ' + timeModified)
+    print('\nData Last updated ' + timeModified + "\n")
+
+    ##
+    # Savings Rate
+    #
+    # Displays savings rate as described by the Bureau of Analysis.
+    # Disposable personal income - personal outlay / disposable personal income
+    # aka. (total savings)/(gross-taxes)
+    ##
+    savings_rate_estimate = (estimate_deductions_401k + leftover)/(estimate_gross_income - estimate_tax_costs) * 100
+    savings_rate_real = (estimate_deductions_401k + real_leftover)/(estimate_gross_income - estimate_tax_costs) * 100
+    print(f"(Estimate) Savings Rate (BoA): {format(savings_rate_estimate, '.2f')}%")
+    print(f"(Real) Savings Rate (BoA): {format(savings_rate_real, '.2f')}%\n")
+
 def emergency():
     print(Style.BRIGHT + Fore.BLUE + "Emergency Calculator" + Style.NORMAL + Fore.RESET)
     # Load data
@@ -363,7 +376,7 @@ def main():
     parser.add_argument("-n", "--net", action="store_true",
                         help="show net worth and account amounts")
     parser.add_argument("-b", "--budget", action="store_true",
-                        help="show current budget")
+                        help="show current budget and savings rate")
     parser.add_argument("-e", "--emergency", action="store_true",
                         help="show emergency fund timeline")
     parser.add_argument("-r", "--refresh", action="store_true",
