@@ -215,8 +215,8 @@ def monthly_budget(verbosity):
         budget.append([
             f"{i['cat']}",
             f"${format(i['bgt'], '.2f')}",
-            f"{round(i['amt'], 2)}",
-            f"{round(i['rbal'], 2)}",
+            f"${format(round(i['amt'], 2), '.2f')}",
+            f"${format(round(i['rbal'], 2), '.2f')}",
             f"{create_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
             f"{round((i['bgt'] / total_expense) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{round((i['bgt'] / net_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
