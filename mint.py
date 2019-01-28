@@ -107,7 +107,7 @@ def net_worth():
         currency = jsonaccount['currency']
         if (jsonaccount['accountType'] in negativeAccounts):
             balance *= -1
-            balance = Fore.RED + str(balance) + Fore.RESET
+            balance_str = Fore.RED + str(balance) + Fore.RESET
             due = jsonaccount['dueAmt']
             dueby = currency + ' @ ' + jsonaccount['dueDate']
         else:
@@ -146,7 +146,9 @@ def monthly_budget(verbosity):
     spend = budgets["spend"]
 
     # Load .env and check for values.
-    deductionRate = float(os.environ['DEDUCTION_RATE']) if os.environ['DEDUCTION_RATE'] != "" else 0.0
+    reg401kDeductionRate = float(os.environ['401K_DEDUCTION_RATE']) if os.environ['401K_DEDUCTION_RATE'] != "" else 0.0
+    roth401kDeductionRate = float(os.environ['ROTH_401K_DEDUCTION_RATE']) if os.environ['ROTH_401K_DEDUCTION_RATE'] != "" else 0.0
+    HSADeductionAmount = float(os.environ['HSA_DEDUCTION_AMOUNT']) if os.environ['HSA_DEDUCTION_AMOUNT'] != "" else 0.0
     if float(os.environ['HOUR_A_DAY']) != "":
         hour_a_day = float(os.environ['HOUR_A_DAY'])
     else:
@@ -160,24 +162,39 @@ def monthly_budget(verbosity):
     else:
         print("Please enter .env data, missing TAX_RATE")
 
+    # TODO Add Roth IRA(divide up leftover)
+
+    # Estimate Gross income from environment variables provided.
     estimate_gross_income = (hour_a_day * pay_rate * 21.74)
-    estimate_deductions_401k = estimate_gross_income * deductionRate
-    estimate_tax_costs = (estimate_gross_income - estimate_deductions_401k)
-    estimate_tax_costs *= tax_rate
+
+    # Figure out Before Tax Deductions
+    reg401k_estimate_deductions = estimate_gross_income * reg401kDeductionRate
+    HSA_estimate_deductions = HSADeductionAmount
+
+    estimate_tax_costs = ((estimate_gross_income - reg401k_estimate_deductions - HSA_estimate_deductions) * tax_rate)
+
+    # Figure out After Tax Deductions
+    roth401k_estimate_deductions = estimate_gross_income * roth401kDeductionRate
+
+
     if verbosity:
-        print(f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}")
-        print(f"Estimated 401k Deduction: ${format(estimate_deductions_401k, '.2f')}")
-        print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}")
+        print(f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}\n")
+        print(Style.BRIGHT + "Before Tax Deductions:" + Style.NORMAL)
+        print(f"Estimated 401k Deduction: ${format(reg401k_estimate_deductions, '.2f')}")
+        print(f"Estimated HSA Deduction: ${format(HSA_estimate_deductions, '.2f')}\n")
+        print(Style.BRIGHT + "After Tax Deductions:" + Style.NORMAL)
+        print(f"Estimated Roth 401k Deduction: ${format(roth401k_estimate_deductions, '.2f')}\n")
+        print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}\n")
 
     # find net income from mint budget
-    net_income = income[0]["bgt"]
-    if verbosity:
-        print(f"(Mint) Total Net Income: ${format(net_income, '.2f')}")
+    #net_income = income[0]["bgt"]
+    #if verbosity:
+    #    print(f"(Mint) Total Net Income: ${format(net_income, '.2f')}")
 
     # Find net income from env variables
-    net_income = (pay_rate * 21.74 * hour_a_day)
-    net_income -= (net_income * deductionRate)
+    net_income = (estimate_gross_income - (reg401k_estimate_deductions + HSA_estimate_deductions))
     net_income -= (net_income * tax_rate)
+    net_income -= roth401k_estimate_deductions
     if verbosity:
         print(f"(Env) Total Net Income: ${format(net_income, '.2f')}")
 
@@ -231,10 +248,18 @@ def monthly_budget(verbosity):
                   f"{round((leftover / estimate_gross_income) * 100, 2)}%",
                   f"{round((real_leftover / estimate_gross_income) * 100, 2)}%"])
     budget.append([None, None, None, None, None])
-    budget.append(['401k', f"${format(estimate_deductions_401k, '.2f')}",
+    budget.append(['Regular 401k', f"${format(reg401k_estimate_deductions, '.2f')}",
                   None, None, None, None, None, None,
-                  f"{round((estimate_deductions_401k / estimate_gross_income) *  100, 2)}%",
-                  f"{round((estimate_deductions_401k / estimate_gross_income) *  100, 2)}%"])
+                  f"{round((reg401k_estimate_deductions / estimate_gross_income) *  100, 2)}%",
+                  f"{round((reg401k_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
+    budget.append(['Roth 401k', f"${format(roth401k_estimate_deductions, '.2f')}",
+                  None, None, None, None, None, None,
+                  f"{round((roth401k_estimate_deductions / estimate_gross_income) *  100, 2)}%",
+                  f"{round((roth401k_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
+    budget.append(['HSA', f"${format(HSA_estimate_deductions, '.2f')}",
+                  None, None, None, None, None, None,
+                  f"{round((HSA_estimate_deductions / estimate_gross_income) *  100, 2)}%",
+                  f"{round((HSA_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
     budget.append(['Taxes', f"${format(estimate_tax_costs, '.2f')}",
                   None, None, None, None, None, None,
                   f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%",
@@ -264,8 +289,9 @@ def monthly_budget(verbosity):
     # Disposable personal income - personal outlay / disposable personal income
     # aka. (total savings)/(gross-taxes)
     ##
-    savings_rate_estimate = (estimate_deductions_401k + leftover)/(estimate_gross_income - estimate_tax_costs) * 100
-    savings_rate_real = (estimate_deductions_401k + real_leftover)/(estimate_gross_income - estimate_tax_costs) * 100
+    savings = reg401k_estimate_deductions + roth401k_estimate_deductions + HSA_estimate_deductions
+    savings_rate_estimate = (savings + leftover)/(estimate_gross_income - estimate_tax_costs) * 100
+    savings_rate_real = (savings + real_leftover)/(estimate_gross_income - estimate_tax_costs) * 100
     print(f"(Estimate) Savings Rate (BoA): {format(savings_rate_estimate, '.2f')}%")
     print(f"(Real) Savings Rate (BoA): {format(savings_rate_real, '.2f')}%\n")
 
