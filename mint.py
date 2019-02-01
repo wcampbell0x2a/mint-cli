@@ -212,19 +212,9 @@ def monthly_budget(verbosity):
     if verbosity:
         print(f"(Mint) Real Total Expense: ${format(real_total_expense, '.2f')}")
 
-    # find total expense of real mint budget amount
-    real_total_expense = 0
-    for i in spend:
-        real_total_expense += i['amt']
-    print(f"(Mint) Real Total Expense: ${format(real_total_expense, '.2f')}")
-
     leftover = net_income - total_expense
-    if verbosity:
-        print(f"Budget Leftover: ${format(leftover, '.2f')}")
 
     real_leftover = net_income - real_total_expense
-    if verbosity:
-        print(f"Real Budget Leftover: ${format(real_leftover, '.2f')}")
 
     # Create budget list, then sort the list by total current amount
     budget = []
