@@ -205,16 +205,16 @@ def monthly_budget(verbosity):
     if verbosity:
         print(f"(Mint) Total Expense: ${format(total_expense, '.2f')}")
 
-    # find total expense of real mint budget amount
-    real_total_expense = 0
+    # find total expense of current mint budget amount
+    current_total_expense = 0
     for i in spend:
-        real_total_expense += i['amt']
+        current_total_expense += i['amt']
     if verbosity:
-        print(f"(Mint) Real Total Expense: ${format(real_total_expense, '.2f')}")
+        print(f"(Mint) Current Total Expense: ${format(current_total_expense, '.2f')}")
 
     leftover = net_income - total_expense
 
-    real_leftover = net_income - real_total_expense
+    current_leftover = net_income - current_total_expense
 
     # Create budget list, then sort the list by total current amount
     budget = []
@@ -232,11 +232,11 @@ def monthly_budget(verbosity):
             f"{str(round((i['amt'] / estimate_gross_income) * 100, 2) if i['amt'] >= 0 else '0').strip()}%"])
         budget = sorted(budget, key=lambda x: float(x[1][1:]))
 
-    budget.append(['Leftover', f"${format(leftover, '.2f')}", f"${format(real_leftover, '.2f')}", None,
+    budget.append(['Leftover', f"${format(leftover, '.2f')}", f"${format(current_leftover, '.2f')}", None,
                   None, None, f"{round((leftover / net_income) * 100, 2)}%",
-                  f"{round((real_leftover / net_income) * 100, 2)}%",
+                  f"{round((current_leftover / net_income) * 100, 2)}%",
                   f"{round((leftover / estimate_gross_income) * 100, 2)}%",
-                  f"{round((real_leftover / estimate_gross_income) * 100, 2)}%"])
+                  f"{round((current_leftover / estimate_gross_income) * 100, 2)}%"])
     budget.append([None, None, None, None, None])
     budget.append(['Regular 401k', f"${format(reg401k_estimate_deductions, '.2f')}",
                   None, None, None, None, None, None,
@@ -265,9 +265,9 @@ def monthly_budget(verbosity):
                    "",
                    "(Budget) Percent of Expenses",
                    "(Budget) Percent of Net Income",
-                   "(Real Budget) Percent of Net Income",
+                   "(Current Budget) Percent of Net Income",
                    "(Budget) Percent of Gross Income",
-                   "(Real Budget) Percent of Gross Income"]))
+                   "(Current Budget) Percent of Gross Income"]))
 
     timeModified = time.ctime(os.path.getmtime("data/budgets.json"))
     print('\nData Last updated ' + timeModified + "\n")
@@ -281,9 +281,9 @@ def monthly_budget(verbosity):
     ##
     savings = reg401k_estimate_deductions + roth401k_estimate_deductions + HSA_estimate_deductions
     savings_rate_estimate = (savings + leftover)/(estimate_gross_income - estimate_tax_costs) * 100
-    savings_rate_real = (savings + real_leftover)/(estimate_gross_income - estimate_tax_costs) * 100
+    savings_rate_current = (savings + current_leftover)/(estimate_gross_income - estimate_tax_costs) * 100
     print(f"(Estimate) Savings Rate (BoA): {format(savings_rate_estimate, '.2f')}%    (${format(savings+leftover, '.2f')}(total savings))/(${format(estimate_gross_income - estimate_tax_costs, '.2f')}(gross-taxes))")
-    print(f"(Real) Savings Rate (BoA): {format(savings_rate_real, '.2f')}%        (${format(savings+real_leftover, '.2f')}(total savings))/(${format(estimate_gross_income - estimate_tax_costs, '.2f')}(gross-taxes))\n")
+    print(f"(Current) Savings Rate (BoA): {format(savings_rate_current, '.2f')}%        (${format(savings+current_leftover, '.2f')}(total savings))/(${format(estimate_gross_income - estimate_tax_costs, '.2f')}(gross-taxes))\n")
 
 def emergency():
     print(Style.BRIGHT + Fore.BLUE + "Emergency Calculator" + Style.NORMAL + Fore.RESET)
@@ -387,6 +387,7 @@ def create_timegraph(percent):
     r_string += Fore.RESET + ">"
     return r_string
 
+# @TODO Add yearly outlook (include bonus)
 def main():
     # Load arguments
     parser = argparse.ArgumentParser()
