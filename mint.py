@@ -282,8 +282,8 @@ def monthly_budget(verbosity):
     savings = reg401k_estimate_deductions + roth401k_estimate_deductions + HSA_estimate_deductions
     savings_rate_estimate = (savings + leftover)/(estimate_gross_income - estimate_tax_costs) * 100
     savings_rate_real = (savings + real_leftover)/(estimate_gross_income - estimate_tax_costs) * 100
-    print(f"(Estimate) Savings Rate (BoA): {format(savings_rate_estimate, '.2f')}%")
-    print(f"(Real) Savings Rate (BoA): {format(savings_rate_real, '.2f')}%\n")
+    print(f"(Estimate) Savings Rate (BoA): {format(savings_rate_estimate, '.2f')}%    (${format(savings+leftover, '.2f')}(total savings))/(${format(estimate_gross_income - estimate_tax_costs, '.2f')}(gross-taxes))")
+    print(f"(Real) Savings Rate (BoA): {format(savings_rate_real, '.2f')}%        (${format(savings+real_leftover, '.2f')}(total savings))/(${format(estimate_gross_income - estimate_tax_costs, '.2f')}(gross-taxes))\n")
 
 def emergency():
     print(Style.BRIGHT + Fore.BLUE + "Emergency Calculator" + Style.NORMAL + Fore.RESET)
