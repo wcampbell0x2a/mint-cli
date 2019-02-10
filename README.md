@@ -26,3 +26,12 @@ optional arguments:
   -e, --emergency  show emergency fund timeline
   -r, --refresh    refresh data from mint account
   ```
+
+## Usage Example
+Display buget using info from mint.com account and .env
+### .env
+![alt text](https://i.imgur.com/bw07nJm.jpg)
+
+### Output
+```> ./mint.py -rb```
+![alt text](https://i.imgur.com/D2vZ066.jpg)
