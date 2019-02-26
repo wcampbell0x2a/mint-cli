@@ -9,14 +9,15 @@ Display account net worth, emergency budget and current monthly budget in your t
 ## Setup
 
 ```> cp .env.example .env```
+```> vim .env```
 
 Use editor to edit .env file.
 
 ## Usage
 
 ```
-./mint.py
-usage: mint.py [-h] [-v] [-n] [-b] [-e] [-r]
+./mint-cli
+usage: mint-cli [-h] [-v] [-n] [-b] [-e] [-r]
 
 optional arguments:
   -h, --help       show this help message and exit
@@ -33,5 +34,5 @@ Display buget using info from mint.com account and .env
 ![alt text](https://i.imgur.com/bw07nJm.jpg)
 
 ### Output
-```> ./mint.py -rb```
+```> ./mint-cli -rb```
 ![alt text](https://i.imgur.com/D2vZ066.jpg)
