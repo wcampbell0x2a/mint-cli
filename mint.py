@@ -67,8 +67,16 @@ def refresh(verbose):
     Args:
         verbose(bool): If true, will print current username and password.
     """
-    username = os.environ['MINT_USER']
-    password = os.environ['MINT_PASS']
+    if (os.environ['MINT_USER']) != "":
+        username = os.environ['MINT_USER']
+    else:
+        print("Please enter .env data, missing MINT_USER")
+
+    if (os.environ['MINT_PASS']) != "":
+        password = os.environ['MINT_PASS']
+    else:
+        print("Please enter .env data, missing MINT_PASS")
+
     if verbose:
         print(f'Logging as {username} with password: {password}')
     mint = mintapi.Mint(username, password)
