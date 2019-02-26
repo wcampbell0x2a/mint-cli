@@ -1,4 +1,4 @@
-# Mint Display
+# mint-cli
 Display account net worth, emergency budget and current monthly budget in your terminal from your Mint account.
 
 ## Requirements
