@@ -2,7 +2,7 @@
 Display account net worth, emergency budget and current monthly budget in your terminal from your Mint account.
 
 ## Requirements
-```> pip3 install mintapi python-dotenv tabulate```
+```> pip3 install mintapi python-dotenv tabulate colorama```
 
 ```> pacman -S(apt install) chromium-chromedriver```
 
