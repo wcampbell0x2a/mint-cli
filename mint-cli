@@ -53,11 +53,23 @@ def load_json(name):
 def save_json(name, data):
     """
     Helper function to save python json data as files.
+    Creates file if doesn't exist, and directory if not exist.
     Args:
         name(string): name of file
         data(json): data of file created
     """
-    with open(f'data/{name}.json', 'w') as outfile:
+    # Check if data/ has been created
+    if not os.path.exists('data'):
+        os.makedirs('data')
+
+    # Create string var
+    file_path = f'data/{name}.json'
+    # Create file if doesn't exist
+    if not (os.path.isfile(file_path)):
+       open(file_path, 'a').close() 
+
+    # Open and save file
+    with open(file_path, 'w') as outfile:
         json.dump(data, outfile, default=datetime_handler)
 
 
