@@ -66,7 +66,7 @@ def save_json(name, data):
     file_path = f'data/{name}.json'
     # Create file if doesn't exist
     if not (os.path.isfile(file_path)):
-       open(file_path, 'a').close() 
+       open(file_path, 'a').close()
 
     # Open and save file
     with open(file_path, 'w') as outfile:
@@ -158,7 +158,8 @@ def monthly_budget(verbosity):
     """
     # TODO: Add showing the mint total for a specific month(not just current)
 
-    print(Style.BRIGHT + Fore.BLUE + "Monthly Budget" + Style.NORMAL + Fore.RESET)
+    print(Style.BRIGHT + Fore.BLUE + "Monthly Budget" + Style.NORMAL +
+          Fore.RESET)
 
     # get budgets
     budgets = load_json('budgets')
@@ -196,7 +197,6 @@ def monthly_budget(verbosity):
     # Figure out After Tax Deductions
     roth401k_estimate_deductions = estimate_gross_income * roth401kDeductionRate
 
-
     if verbosity:
         print(f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}\n")
         print(Style.BRIGHT + "Before Tax Deductions:" + Style.NORMAL)
@@ -207,9 +207,9 @@ def monthly_budget(verbosity):
         print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}\n")
 
     # find net income from mint budget
-    #net_income = income[0]["bgt"]
-    #if verbosity:
-    #    print(f"(Mint) Total Net Income: ${format(net_income, '.2f')}")
+    # net_income = income[0]["bgt"]
+    # if verbosity:
+    #     print(f"(Mint) Total Net Income: ${format(net_income, '.2f')}")
 
     # Find net income from env variables
     net_income = (estimate_gross_income - (reg401k_estimate_deductions + HSA_estimate_deductions))
@@ -331,7 +331,6 @@ def emergency():
                 accountName = jsonaccount['accountName']
                 balance += jsonaccount['currentBalance']
 
-
     # find total expense from mint budget
     budgets = load_json('budgets')
     spend = budgets["spend"]
@@ -342,11 +341,9 @@ def emergency():
     print(f"(Mint) Total Expense: ${format(total_expense, '.2f')}")
     print(f"Current Months in Emergency Fund: {round(float(format(balance/total_expense)), 2)}")
 
-# @TODO Add pep8
 def create_timegraph(percent):
     """
     Displays the percentage spend a month as a colored ASCII art.
-
     Args:
         percent(float): percentage of total spend on budget
     Returns:
@@ -407,7 +404,7 @@ def create_timegraph(percent):
     r_string += Fore.RESET + ">"
     return r_string
 
-# @TODO Add yearly outlook (include bonus)
+# TODO Add yearly outlook (include bonus)
 def main():
     # Load arguments
     parser = argparse.ArgumentParser()
