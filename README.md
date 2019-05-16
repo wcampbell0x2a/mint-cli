@@ -16,6 +16,7 @@ When installed from the aur, the .env file is located at `/etc/mint-cli/.env`
 ## Install from source
 
 Make sure to use the -l flag when installed from local, the .env file is expected to be in the git repo.
+
 ```> cp .env.example .env```
 ```> vim .env```
 
@@ -33,7 +34,8 @@ optional arguments:
   -e, --emergency  show emergency fund timeline
   -r, --refresh    refresh data from mint account
   -l, --local      use local data and .env
-  ```
+
+```
 
 ## Usage Example
 Display buget using info from mint.com account and .env
