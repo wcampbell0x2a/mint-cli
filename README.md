@@ -1,17 +1,23 @@
 # mint-cli
-Display account net worth, emergency budget and current monthly budget in your terminal from your Mint account.
+Terminal interface for the Intuit Mint budget system
+Displays account net worth, emergency budget and current monthly budget.
 
 ## Requirements
-```> pip3 install mintapi python-dotenv tabulate colorama```
+```python: mintapi python-dotenv tabulate colorama```
 
 ```> pacman -S(apt install) chromium-chromedriver```
 
-## Setup
+## Install from AUR
 
+https://aur.archlinux.org/packages/mint-cli
+
+When installed from the aur, the .env file is located at `/etc/mint-cli/.env`
+
+## Install from source
+
+Make sure to use the -l flag when installed from local, the .env file is expected to be in the git repo.
 ```> cp .env.example .env```
 ```> vim .env```
-
-Use editor to edit .env file.
 
 ## Usage
 
@@ -26,6 +32,7 @@ optional arguments:
   -b, --budget     show current budget and savings rate
   -e, --emergency  show emergency fund timeline
   -r, --refresh    refresh data from mint account
+  -l, --local      use local data and .env
   ```
 
 ## Usage Example

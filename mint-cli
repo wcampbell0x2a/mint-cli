@@ -42,6 +42,8 @@ from colorama import init, Fore, Style
 
 init()
 
+data_prefix = ''
+etc_prefix = ''
 
 def datetime_handler(x):
     """
@@ -61,7 +63,7 @@ def load_json(name):
         name(string): name of file to be loaded
     """
     try:
-        with open(f'data/{name}.json') as f:
+        with open(f'{data_prefix}data/{name}.json') as f:
             data = json.load(f)
         return data
     except FileNotFoundError:
@@ -81,7 +83,7 @@ def save_json(name, data):
         os.makedirs('data')
 
     # Create string var
-    file_path = f'data/{name}.json'
+    file_path = f'{data_prefix}data/{name}.json'
     # Create file if doesn't exist
     if not (os.path.isfile(file_path)):
        open(file_path, 'a').close()
@@ -307,7 +309,7 @@ def monthly_budget(verbosity):
                    "(Budget) Percent of Gross Income",
                    "(Current Budget) Percent of Gross Income"]))
 
-    timeModified = time.ctime(os.path.getmtime("data/budgets.json"))
+    timeModified = time.ctime(os.path.getmtime(f"{data_prefix}data/budgets.json"))
     print('\nData Last updated ' + timeModified + "\n")
 
     ##
@@ -436,10 +438,26 @@ def main():
                         help="show emergency fund timeline")
     parser.add_argument("-r", "--refresh", action="store_true",
                         help="refresh data from mint account")
+    parser.add_argument("-l", "--local", action="store_true",
+                        help="Use local data and .env files")
     args = parser.parse_args()
 
-    # load .env file
-    load_dotenv(find_dotenv())
+    # Load data and .env from local files or not
+    if args.local:
+        data_prefix = "./"
+        etc_prefix = "./"
+    else:
+        data_prefix = "/var/lib/mint-cli/"
+        etc_prefix = "/etc/mint-cli/"
+
+    # load .env file (and check if exists)
+    env_path = f'{etc_prefix}.env'
+    try:
+        fh = open(env_path, 'r')
+        load_dotenv(env_path)
+    except FileNotFoundError:
+        print(f'{env_path} file not found')
+        return
 
     # Load username and passwords
     if args.refresh:
@@ -450,6 +468,7 @@ def main():
     # Load budget display
     if args.budget:
         monthly_budget(args.verbosity)
+    # Load emergeny display
     if args.emergency:
         emergency()
 
