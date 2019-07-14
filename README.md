@@ -9,7 +9,7 @@ Displays account net worth, emergency budget and current monthly budget.
 
 ## Install from AUR
 
-https://aur.archlinux.org/packages/mint-cli
+https://aur.archlinux.org/packages/mint-cli-git
 
 When installed from the aur, the .env file is located at `/etc/mint-cli/.env`
 
