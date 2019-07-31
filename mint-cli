@@ -259,12 +259,17 @@ def monthly_budget(verbosity):
     # Create budget list, then sort the list by total current amount
     budget = []
     for i in spend:
+        timegraph_string = ""
+        try:
+            timegraph_string = create_timegraph(round(((i['amt']/i['bgt'])*100), 1))
+        except ZeroDivisionError:
+            pass
         budget.append([
             f"{i['cat']}",
             f"${format(i['bgt'], '.2f')}",
             f"${format(round(i['amt'], 2), '.2f')}",
             f"${format(round(i['rbal'], 2), '.2f')}",
-            f"{create_timegraph(round(((i['amt']/i['bgt'])*100), 1))}",
+            timegraph_string,
             f"{round((i['bgt'] / total_expense) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{round((i['bgt'] / net_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
             f"{round((i['amt'] / net_income) * 100, 2) if i['bgt'] >= 0 else '0'}%",
