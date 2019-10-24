@@ -476,7 +476,7 @@ def main():
     # Load budget display
     if args.budget:
         monthly_budget(args.verbosity)
-    # Load emergeny display
+    # Load emergency display
     if args.emergency:
         emergency()
 
