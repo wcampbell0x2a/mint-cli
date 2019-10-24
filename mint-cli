@@ -190,6 +190,7 @@ def monthly_budget(verbosity):
     reg401kDeductionRate = float(os.environ['401K_DEDUCTION_RATE']) if os.environ['401K_DEDUCTION_RATE'] != "" else 0.0
     roth401kDeductionRate = float(os.environ['ROTH_401K_DEDUCTION_RATE']) if os.environ['ROTH_401K_DEDUCTION_RATE'] != "" else 0.0
     HSADeductionAmount = float(os.environ['HSA_DEDUCTION_AMOUNT']) if os.environ['HSA_DEDUCTION_AMOUNT'] != "" else 0.0
+    secondary_income = float(os.environ['SECONDARY_INCOME']) if os.environ['SECONDARY_INCOME'] != "" else 0.0
     if float(os.environ['HOUR_A_DAY']) != "":
         hour_a_day = float(os.environ['HOUR_A_DAY'])
     else:
@@ -235,7 +236,9 @@ def monthly_budget(verbosity):
     net_income = (estimate_gross_income - (reg401k_estimate_deductions + HSA_estimate_deductions))
     net_income -= (net_income * tax_rate)
     net_income -= roth401k_estimate_deductions
+    net_income += secondary_income
     if verbosity:
+        print(f"(Env) Secondary Net Income: ${format(secondary_income, '.2f')} (Not used for HSA/104K/or tax)")
         print(f"(Env) Total Net Income: ${format(net_income, '.2f')}")
 
     # find total expense from mint budget
