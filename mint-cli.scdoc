@@ -1,0 +1,46 @@
+MINT-CLI(1) ["mint-cli VERSION" ["General mint-cli Manual"]]
+
+# NAME
+*mint-cli* - mint command line interface
+
+# DESCRIPTION
+*mint-cli* is a cli interface for Intuit Mint which connects to the service
+using the python-mintapi library.
+
+# SYNOPSIS
+*mint-cli* [-h] [-v] [-n] [-b] [-e] [-r] [-l]
+
+# OPTIONS
+```
+-h, --help       show this help message and exit
+
+-v, --verbosity  increase output verbosity
+
+-n, --net        show net worth and account amounts
+
+-b, --budget     show current budget and savings rate
+
+-e, --emergency  show emergency fund timeline
+
+-r, --refresh    refresh data from mint account
+
+-l, --local      Use local data and .env files
+```
+
+# CONFIGURATION
+When configuring *mint-cli* you have two options on where to copy the .env.example
+file to a .env file.
+
+## LOCAL
+Rename the local .env.example file to .env, you must always run *mint-cli* from
+this location
+
+## SYSTEM
+Copy the .env.example to /etc/mint-cli/, then rename to .env. This is usually used
+(and automatically done) if you installed from the AUR.
+
+## EDIT CONFIG
+Enter your values and save the file (.env) before running *mint-cli*
+
+# AUTHOR
+Maintained by Wayne Campbell <wcampbell1995 [at] gmail [dot] com>

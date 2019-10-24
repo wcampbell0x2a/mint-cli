@@ -7,6 +7,8 @@ Displays account net worth, emergency budget and current monthly budget.
 
 ```> pacman -S(apt install) chromium-chromedriver```
 
+scdoc for man file creation
+
 ## Install from AUR
 
 https://aur.archlinux.org/packages/mint-cli-git
@@ -20,11 +22,19 @@ Make sure to use the -l flag when installed from local, the .env file is expecte
 ```> cp .env.example .env```
 ```> vim .env```
 
+### Install man page
+
+To install the man page run the following commands:
+```
+make
+sudo make install
+```
+
 ## Usage
 
 ```
 ./mint-cli
-usage: mint-cli [-h] [-v] [-n] [-b] [-e] [-r]
+usage: mint-cli [-h] [-v] [-n] [-b] [-e] [-r] [-l]
 
 optional arguments:
   -h, --help       show this help message and exit
