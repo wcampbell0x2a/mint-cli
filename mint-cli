@@ -45,6 +45,7 @@ init()
 data_prefix = ''
 etc_prefix = ''
 
+
 def datetime_handler(x):
     """
     Helper function to load datetime json formats into python datetime.
@@ -86,7 +87,7 @@ def save_json(name, data):
     file_path = f'{data_prefix}data/{name}.json'
     # Create file if doesn't exist
     if not (os.path.isfile(file_path)):
-       open(file_path, 'a').close()
+        open(file_path, 'a').close()
 
     # Open and save file
     with open(file_path, 'w') as outfile:
@@ -157,14 +158,14 @@ def net_worth():
                 balance_str = Fore.GREEN + str(balance) + Fore.RESET
         percentage = balance/net_worth
         accounts.append([institution, account_name.title(), balance_str,
-                        currency, due, dueby, f'{round(percentage*100, 0)}%'])
+                         currency, due, dueby, f'{round(percentage*100, 0)}%'])
 
     accounts.append(['', '', None, '', None, ''])
     accounts.append(['', Style.BRIGHT + '               NET WORTH',
-                    net_worth, 'USD' + Style.NORMAL, None, ''])
+                     net_worth, 'USD' + Style.NORMAL, None, ''])
 
     print(tabulate(accounts, numalign="right", floatfmt=".2f",
-          tablefmt="plain"))
+                   tablefmt="plain"))
 
 
 def monthly_budget(verbosity):
@@ -187,10 +188,14 @@ def monthly_budget(verbosity):
     spend = budgets["spend"]
 
     # Load .env and check for values.
-    reg401kDeductionRate = float(os.environ['401K_DEDUCTION_RATE']) if os.environ['401K_DEDUCTION_RATE'] != "" else 0.0
-    roth401kDeductionRate = float(os.environ['ROTH_401K_DEDUCTION_RATE']) if os.environ['ROTH_401K_DEDUCTION_RATE'] != "" else 0.0
-    HSADeductionAmount = float(os.environ['HSA_DEDUCTION_AMOUNT']) if os.environ['HSA_DEDUCTION_AMOUNT'] != "" else 0.0
-    secondary_income = float(os.environ['SECONDARY_INCOME']) if os.environ['SECONDARY_INCOME'] != "" else 0.0
+    reg401kDeductionRate = float(
+        os.environ['401K_DEDUCTION_RATE']) if os.environ['401K_DEDUCTION_RATE'] != "" else 0.0
+    roth401kDeductionRate = float(
+        os.environ['ROTH_401K_DEDUCTION_RATE']) if os.environ['ROTH_401K_DEDUCTION_RATE'] != "" else 0.0
+    HSADeductionAmount = float(
+        os.environ['HSA_DEDUCTION_AMOUNT']) if os.environ['HSA_DEDUCTION_AMOUNT'] != "" else 0.0
+    secondary_income = float(
+        os.environ['SECONDARY_INCOME']) if os.environ['SECONDARY_INCOME'] != "" else 0.0
     if float(os.environ['HOUR_A_DAY']) != "":
         hour_a_day = float(os.environ['HOUR_A_DAY'])
     else:
@@ -213,18 +218,23 @@ def monthly_budget(verbosity):
     reg401k_estimate_deductions = estimate_gross_income * reg401kDeductionRate
     HSA_estimate_deductions = HSADeductionAmount
 
-    estimate_tax_costs = ((estimate_gross_income - reg401k_estimate_deductions - HSA_estimate_deductions) * tax_rate)
+    estimate_tax_costs = (
+        (estimate_gross_income - reg401k_estimate_deductions - HSA_estimate_deductions) * tax_rate)
 
     # Figure out After Tax Deductions
     roth401k_estimate_deductions = estimate_gross_income * roth401kDeductionRate
 
     if verbosity:
-        print(f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}\n")
+        print(
+            f"Estimated Gross Income: ${format(estimate_gross_income, '.2f')}\n")
         print(Style.BRIGHT + "Before Tax Deductions:" + Style.NORMAL)
-        print(f"Estimated 401k Deduction: ${format(reg401k_estimate_deductions, '.2f')}")
-        print(f"Estimated HSA Deduction: ${format(HSA_estimate_deductions, '.2f')}\n")
+        print(
+            f"Estimated 401k Deduction: ${format(reg401k_estimate_deductions, '.2f')}")
+        print(
+            f"Estimated HSA Deduction: ${format(HSA_estimate_deductions, '.2f')}\n")
         print(Style.BRIGHT + "After Tax Deductions:" + Style.NORMAL)
-        print(f"Estimated Roth 401k Deduction: ${format(roth401k_estimate_deductions, '.2f')}\n")
+        print(
+            f"Estimated Roth 401k Deduction: ${format(roth401k_estimate_deductions, '.2f')}\n")
         print(f"Estimated Taxes: ${format(estimate_tax_costs, '.2f')}\n")
 
     # find net income from mint budget
@@ -233,12 +243,14 @@ def monthly_budget(verbosity):
     #     print(f"(Mint) Total Net Income: ${format(net_income, '.2f')}")
 
     # Find net income from env variables
-    net_income = (estimate_gross_income - (reg401k_estimate_deductions + HSA_estimate_deductions))
+    net_income = (estimate_gross_income -
+                  (reg401k_estimate_deductions + HSA_estimate_deductions))
     net_income -= (net_income * tax_rate)
     net_income -= roth401k_estimate_deductions
     net_income += secondary_income
     if verbosity:
-        print(f"(Env) Secondary Net Income: ${format(secondary_income, '.2f')} (Not used for HSA/104K/or tax)")
+        print(
+            f"(Env) Secondary Net Income: ${format(secondary_income, '.2f')} (Not used for HSA/104K/or tax)")
         print(f"(Env) Total Net Income: ${format(net_income, '.2f')}")
 
     # find total expense from mint budget
@@ -253,7 +265,8 @@ def monthly_budget(verbosity):
     for i in spend:
         current_total_expense += i['amt']
     if verbosity:
-        print(f"(Mint) Current Total Expense: ${format(current_total_expense, '.2f')}")
+        print(
+            f"(Mint) Current Total Expense: ${format(current_total_expense, '.2f')}")
 
     leftover = net_income - total_expense
 
@@ -264,7 +277,8 @@ def monthly_budget(verbosity):
     for i in spend:
         timegraph_string = ""
         try:
-            timegraph_string = create_timegraph(round(((i['amt']/i['bgt'])*100), 1))
+            timegraph_string = create_timegraph(
+                round(((i['amt']/i['bgt'])*100), 1))
         except ZeroDivisionError:
             pass
         budget.append([
@@ -281,43 +295,44 @@ def monthly_budget(verbosity):
         budget = sorted(budget, key=lambda x: float(x[1][1:]))
 
     budget.append(['Leftover', f"${format(leftover, '.2f')}", f"${format(current_leftover, '.2f')}", None,
-                  None, None, f"{round((leftover / net_income) * 100, 2)}%",
-                  f"{round((current_leftover / net_income) * 100, 2)}%",
-                  f"{round((leftover / estimate_gross_income) * 100, 2)}%",
-                  f"{round((current_leftover / estimate_gross_income) * 100, 2)}%"])
+                   None, None, f"{round((leftover / net_income) * 100, 2)}%",
+                   f"{round((current_leftover / net_income) * 100, 2)}%",
+                   f"{round((leftover / estimate_gross_income) * 100, 2)}%",
+                   f"{round((current_leftover / estimate_gross_income) * 100, 2)}%"])
     budget.append([None, None, None, None, None])
     budget.append(['Regular 401k', f"${format(reg401k_estimate_deductions, '.2f')}",
-                  None, None, None, None, None, None,
-                  f"{round((reg401k_estimate_deductions / estimate_gross_income) *  100, 2)}%",
-                  f"{round((reg401k_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
+                   None, None, None, None, None, None,
+                   f"{round((reg401k_estimate_deductions / estimate_gross_income) *  100, 2)}%",
+                   f"{round((reg401k_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
     budget.append(['Roth 401k', f"${format(roth401k_estimate_deductions, '.2f')}",
-                  None, None, None, None, None, None,
-                  f"{round((roth401k_estimate_deductions / estimate_gross_income) *  100, 2)}%",
-                  f"{round((roth401k_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
+                   None, None, None, None, None, None,
+                   f"{round((roth401k_estimate_deductions / estimate_gross_income) *  100, 2)}%",
+                   f"{round((roth401k_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
     budget.append(['HSA', f"${format(HSA_estimate_deductions, '.2f')}",
-                  None, None, None, None, None, None,
-                  f"{round((HSA_estimate_deductions / estimate_gross_income) *  100, 2)}%",
-                  f"{round((HSA_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
+                   None, None, None, None, None, None,
+                   f"{round((HSA_estimate_deductions / estimate_gross_income) *  100, 2)}%",
+                   f"{round((HSA_estimate_deductions / estimate_gross_income) *  100, 2)}%"])
     budget.append(['Taxes', f"${format(estimate_tax_costs, '.2f')}",
-                  None, None, None, None, None, None,
-                  f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%",
-                  f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%"])
+                   None, None, None, None, None, None,
+                   f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%",
+                   f"{round((estimate_tax_costs / estimate_gross_income) * 100, 2)}%"])
 
     # Print list as tabulate table
     print(tabulate(budget, numalign="left", floatfmt=".2f",
-          tablefmt="grid",
-          headers=["Name",
-                   "(Budget) Total",
-                   "Current Amount",
-                   "Remaining Balance",
-                   "",
-                   "(Budget) Percent of Expenses",
-                   "(Budget) Percent of Net Income",
-                   "(Current Budget) Percent of Net Income",
-                   "(Budget) Percent of Gross Income",
-                   "(Current Budget) Percent of Gross Income"]))
+                   tablefmt="grid",
+                   headers=["Name",
+                            "(Budget) Total",
+                            "Current Amount",
+                            "Remaining Balance",
+                            "",
+                            "(Budget) Percent of Expenses",
+                            "(Budget) Percent of Net Income",
+                            "(Current Budget) Percent of Net Income",
+                            "(Budget) Percent of Gross Income",
+                            "(Current Budget) Percent of Gross Income"]))
 
-    time_modified = time.ctime(os.path.getmtime(f"{data_prefix}data/budgets.json"))
+    time_modified = time.ctime(os.path.getmtime(
+        f"{data_prefix}data/budgets.json"))
     print('\nData Last updated ' + time_modified + "\n")
 
     ##
@@ -327,18 +342,23 @@ def monthly_budget(verbosity):
     # Disposable personal income - personal outlay / disposable personal income
     # aka. (total savings)/(gross-taxes)
     ##
-    savings = reg401k_estimate_deductions + roth401k_estimate_deductions + HSA_estimate_deductions
-    savings_rate_estimate = (savings + leftover)/(estimate_gross_income - estimate_tax_costs) * 100
-    savings_rate_current = (savings + current_leftover)/(estimate_gross_income - estimate_tax_costs) * 100
+    savings = reg401k_estimate_deductions + \
+        roth401k_estimate_deductions + HSA_estimate_deductions
+    savings_rate_estimate = (savings + leftover) / \
+        (estimate_gross_income - estimate_tax_costs) * 100
+    savings_rate_current = (savings + current_leftover) / \
+        (estimate_gross_income - estimate_tax_costs) * 100
     print(f"(Estimate) Savings Rate (BoA): {format(savings_rate_estimate, '.2f')}%    (${format(savings+leftover, '.2f')}(total savings))/(${format(estimate_gross_income - estimate_tax_costs, '.2f')}(gross-taxes))")
     print(f"(Current) Savings Rate (BoA): {format(savings_rate_current, '.2f')}%        (${format(savings+current_leftover, '.2f')}(total savings))/(${format(estimate_gross_income - estimate_tax_costs, '.2f')}(gross-taxes))\n")
+
 
 def emergency():
     """
     Parse emergency banks and determine the total amount in those accounts
     and how many months from the current monthly expenses
     """
-    print(Style.BRIGHT + Fore.BLUE + "Emergency Calculator" + Style.NORMAL + Fore.RESET)
+    print(Style.BRIGHT + Fore.BLUE +
+          "Emergency Calculator" + Style.NORMAL + Fore.RESET)
     # Load account data from mintapi generated json file
     jsonaccounts = load_json('accounts')
 
@@ -359,7 +379,7 @@ def emergency():
             institution_name = item[item.find("(")+1:item.find(")")]
             account_name = item.split("(")[0]
 
-            if (jsonaccount['accountname'] ==  institution_name and jsonaccount['fiName'] == account_name):
+            if (jsonaccount['accountname'] == institution_name and jsonaccount['fiName'] == account_name):
                 institution = jsonaccount['fiName']
                 account_name = jsonaccount['accountName']
                 balance += jsonaccount['currentBalance']
@@ -372,7 +392,9 @@ def emergency():
         total_expense += i['bgt']
     print(f"Total Amount in Emergency Fund marked Accounts: ${balance}")
     print(f"(Mint) Total Expense: ${format(total_expense, '.2f')}")
-    print(f"Current Months in Emergency Fund: {round(float(format(balance/total_expense)), 2)}")
+    print(
+        f"Current Months in Emergency Fund: {round(float(format(balance/total_expense)), 2)}")
+
 
 def create_timegraph(percent):
     """
@@ -432,12 +454,14 @@ def create_timegraph(percent):
 
     # Correction for end of month (need to delete the last char if at the end)
     if (month_percentage == 10):
-        r_string = r_string[:15]  + r_string[16:]
+        r_string = r_string[:15] + r_string[16:]
 
     r_string += Fore.RESET + ">"
     return r_string
 
 # TODO Add yearly outlook (include bonus)
+
+
 def main():
     # Load arguments
     parser = argparse.ArgumentParser()
@@ -487,6 +511,7 @@ def main():
     # Load emergency display
     if args.emergency:
         emergency()
+
 
 if __name__ == "__main__":
     main()
