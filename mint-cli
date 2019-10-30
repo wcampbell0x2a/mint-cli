@@ -346,6 +346,7 @@ def emergency():
             emergency_var_string = str(os.environ['EMERGENCY'])
         else:
             print("Please enter .env data, missing EMERGENCY")
+            return
 
         emergency_var_list = emergency_var_string.split(",")
 
