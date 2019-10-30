@@ -113,9 +113,9 @@ def refresh(verbose):
         print(f'Logging as {username} with password: {password}')
     mint = mintapi.Mint(username, password)
 
-    save_json('accounts', mint.get_accounts())
+    save_json('accounts',  mint.get_accounts())
     save_json('net_worth', mint.get_net_worth())
-    save_json('budgets', mint.get_budgets())
+    save_json('budgets',   mint.get_budgets())
 
     print("mint data saved successfully")
 
@@ -126,8 +126,8 @@ def net_worth():
     Show the total amount at the end
     """
     print(Style.BRIGHT + Fore.BLUE + "Net Worth" + Style.NORMAL + Fore.RESET)
-    negativeAccounts = ['loan', 'credit']
-    prevInstitution = ''
+    negative_accounts = ['loan', 'credit']
+    prev_institution = ''
     accounts = []
 
     # Load data
@@ -137,15 +137,15 @@ def net_worth():
     # Loop through accounts and display with due date
     for jsonaccount in jsonaccounts:
         institution = jsonaccount['fiName']
-        if (institution == prevInstitution):
+        if (institution == prev_institution):
             institution = ''
-        prevInstitution = jsonaccount['fiName']
-        accountName = jsonaccount['accountName']
+        prev_institution = jsonaccount['fiName']
+        account_name = jsonaccount['accountName']
         balance = jsonaccount['currentBalance']
         due = None
         dueby = ''
         currency = jsonaccount['currency']
-        if (jsonaccount['accountType'] in negativeAccounts):
+        if (jsonaccount['accountType'] in negative_accounts):
             balance *= -1
             balance_str = Fore.RED + str(balance) + Fore.RESET
             due = jsonaccount['dueAmt']
@@ -156,7 +156,7 @@ def net_worth():
             else:
                 balance_str = Fore.GREEN + str(balance) + Fore.RESET
         percentage = balance/net_worth
-        accounts.append([institution, accountName.title(), balance_str,
+        accounts.append([institution, account_name.title(), balance_str,
                         currency, due, dueby, f'{round(percentage*100, 0)}%'])
 
     accounts.append(['', '', None, '', None, ''])
@@ -317,8 +317,8 @@ def monthly_budget(verbosity):
                    "(Budget) Percent of Gross Income",
                    "(Current Budget) Percent of Gross Income"]))
 
-    timeModified = time.ctime(os.path.getmtime(f"{data_prefix}data/budgets.json"))
-    print('\nData Last updated ' + timeModified + "\n")
+    time_modified = time.ctime(os.path.getmtime(f"{data_prefix}data/budgets.json"))
+    print('\nData Last updated ' + time_modified + "\n")
 
     ##
     # Savings Rate
@@ -334,8 +334,12 @@ def monthly_budget(verbosity):
     print(f"(Current) Savings Rate (BoA): {format(savings_rate_current, '.2f')}%        (${format(savings+current_leftover, '.2f')}(total savings))/(${format(estimate_gross_income - estimate_tax_costs, '.2f')}(gross-taxes))\n")
 
 def emergency():
+    """
+    Parse emergency banks and determine the total amount in those accounts
+    and how many months from the current monthly expenses
+    """
     print(Style.BRIGHT + Fore.BLUE + "Emergency Calculator" + Style.NORMAL + Fore.RESET)
-    # Load data
+    # Load account data from mintapi generated json file
     jsonaccounts = load_json('accounts')
 
     # Search accounts for accounts that are tagged as emergency accounts in .env
@@ -352,12 +356,12 @@ def emergency():
 
         # Insert into searchable list
         for item in emergency_var_list:
-            institutionName = item[item.find("(")+1:item.find(")")]
-            accountName = item.split("(")[0]
+            institution_name = item[item.find("(")+1:item.find(")")]
+            account_name = item.split("(")[0]
 
-            if (jsonaccount['accountName'] ==  institutionName  and jsonaccount['fiName'] == accountName):
+            if (jsonaccount['accountname'] ==  institution_name and jsonaccount['fiName'] == account_name):
                 institution = jsonaccount['fiName']
-                accountName = jsonaccount['accountName']
+                account_name = jsonaccount['accountName']
                 balance += jsonaccount['currentBalance']
 
     # find total expense from mint budget
@@ -402,18 +406,18 @@ def create_timegraph(percent):
     for x in range(int(percentage*10) + start_r, 10, 1):
         print_string += "-"
 
-    currentDay = datetime.datetime.today().day
+    current_day = datetime.datetime.today().day
     now = datetime.datetime.now()
-    maxDaysMonth = calendar.monthrange(now.year, now.month)[1]
+    max_days_month = calendar.monthrange(now.year, now.month)[1]
 
     # Print Timeline
-    monthPercentage = int(round(currentDay/maxDaysMonth, 1)*10)
+    month_percentage = int(round(current_day/max_days_month, 1)*10)
     r_string = "<"
-    r_string += Fore.GREEN + print_string[:monthPercentage]
+    r_string += Fore.GREEN + print_string[:month_percentage]
     r_string += Fore.RESET
 
     # Fill in rest of month
-    r_string += print_string[monthPercentage:-1]
+    r_string += print_string[month_percentage:-1]
 
     # Print last red of over 10%
     if color_red:
@@ -421,13 +425,13 @@ def create_timegraph(percent):
     else:
         # Check if end of month, if end of month print green
         # instead of reset color
-        if (monthPercentage == 10):
+        if (month_percentage == 10):
             r_string += Fore.GREEN + print_string[-1:]
         else:
             r_string += print_string[-1:]
 
     # Correction for end of month (need to delete the last char if at the end)
-    if (monthPercentage == 10):
+    if (month_percentage == 10):
         r_string = r_string[:15]  + r_string[16:]
 
     r_string += Fore.RESET + ">"
@@ -471,16 +475,18 @@ def main():
     # Load username and passwords
     if args.refresh:
         refresh(args.verbosity)
+
     # Load net worth
     if args.net:
         net_worth()
+
     # Load budget display
     if args.budget:
         monthly_budget(args.verbosity)
+
     # Load emergency display
     if args.emergency:
         emergency()
-
 
 if __name__ == "__main__":
     main()
